@@ -10,24 +10,59 @@ autoinstall:
     layout: br
     variant: abnt2
   timezone: America/Sao_Paulo
+
   storage:
-    layout:
-      name: lvm
-    grub:
-      reorder: false
-    swap:
-      size: 0
-    encrypt: true
-    luks:
-      passphrase: "sito ague tons anjo seja cepa"
+    config:
+      - type: disk
+        id: disk0
+        match:
+          size: largest
+        wipe: superblock
+        preserve: false
+        name: primary
+        grub_device: true
+        size: 100%
+        children:
+          - type: partition
+            id: primary-partition
+            size: 100%
+            format: ext4
+            mount: /
+      - type: luks
+        id: luks1
+        name: encrypted_disk
+        device: /dev/sda1
+        passphrase: "sito ague tons anjo seja cepa"
+        format: ext4
+        mount: /mnt/encrypted
+        options:
+          luks: true
+        children:
+          - type: partition
+            id: encrypted-partition
+            size: 100%
+            format: ext4
+            mount: /mnt
+
   packages:
     - wget
     - curl
     - gnupg
     - apt-transport-https
     - openssh-server
-  user-data:
-    disable_root: false
+
+  users:
+    - name: efsj
+      gecos: "EF SJ"
+      sudo: ALL=(ALL) NOPASSWD:ALL
+      lock_passwd: false
+      shell: /bin/bash
+      ssh_authorized_keys:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIci5IafmxzQ3XWgI9CnhE/gQG5periAQDBz7SEwg0CY r
+        - ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBOrUmPULmgjv88/kBMK6GY6UNUaFeW8QpRj5Kg3THj/wH21xdw/UrYGewE9/nEVgiQRN0OVm8vYSxShdnjBatRU= a
+        - ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBNf0YROAdFNTNbRkXsL+S0ss7SZS5nreOoX5P6UfsaBYWJFHSUS/HIvVUWD+z1SVI8wOrCWtNDHRJvbxXMGs0UY= g
+        - ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBNeOKUtgYNg4lH2PfzW4XnvPtX5dYEokCOMYJRThyFOSoeBITjXAnJDHaGIlZt0mEw3znP8GT38+E9LoTJTBsaQ= j
+
   late-commands:
     - curtin in-target --target=/target -- sh -c 'wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor > /usr/share/keyrings/google.gpg'
     - curtin in-target --target=/target -- sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list'
