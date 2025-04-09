@@ -44,37 +44,3 @@ autoinstall:
             format: ext4
             mount: /mnt
 
-  packages:
-    - wget
-    - curl
-    - gnupg
-    - apt-transport-https
-    - openssh-server
-
-  users:
-    - name: efsj
-      gecos: "EF SJ"
-      sudo: ALL=(ALL) NOPASSWD:ALL
-      lock_passwd: false
-      shell: /bin/bash
-      ssh_authorized_keys:
-        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIci5IafmxzQ3XWgI9CnhE/gQG5periAQDBz7SEwg0CY r
-        - ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBOrUmPULmgjv88/kBMK6GY6UNUaFeW8QpRj5Kg3THj/wH21xdw/UrYGewE9/nEVgiQRN0OVm8vYSxShdnjBatRU= a
-        - ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBNf0YROAdFNTNbRkXsL+S0ss7SZS5nreOoX5P6UfsaBYWJFHSUS/HIvVUWD+z1SVI8wOrCWtNDHRJvbxXMGs0UY= g
-        - ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBNeOKUtgYNg4lH2PfzW4XnvPtX5dYEokCOMYJRThyFOSoeBITjXAnJDHaGIlZt0mEw3znP8GT38+E9LoTJTBsaQ= j
-
-  late-commands:
-    - curtin in-target --target=/target -- sh -c 'wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor > /usr/share/keyrings/google.gpg'
-    - curtin in-target --target=/target -- sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list'
-    - curtin in-target --target=/target -- apt-get update
-    - curtin in-target --target=/target -- apt-get install -y google-chrome-stable
-    - curtin in-target --target=/target -- snap install slack --classic
-    - curtin in-target --target=/target -- mkdir -p /root/.ssh
-    - curtin in-target --target=/target -- chmod 700 /root/.ssh
-    - curtin in-target --target=/target -- sh -c 'cat <<EOF > /root/.ssh/authorized_keys
-ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBOrUmPULmgjv88/kBMK6GY6UNUaFeW8QpRj5Kg3THj/wH21xdw/UrYGewE9/nEVgiQRN0OVm8vYSxShdnjBatRU= a
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIci5IafmxzQ3XWgI9CnhE/gQG5periAQDBz7SEwg0CY r
-ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBNf0YROAdFNTNbRkXsL+S0ss7SZS5nreOoX5P6UfsaBYWJFHSUS/HIvVUWD+z1SVI8wOrCWtNDHRJvbxXMGs0UY= g
-ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBNeOKUtgYNg4lH2PfzW4XnvPtX5dYEokCOMYJRThyFOSoeBITjXAnJDHaGIlZt0mEw3znP8GT38+E9LoTJTBsaQ= j
-EOF'
-    - curtin in-target --target=/target -- chmod 600 /root/.ssh/authorized_keys
