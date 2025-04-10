@@ -12,7 +12,10 @@ autoinstall:
     timezone: "America/Sao_Paulo"
     storage:
         layout:
-            name: direct  # usa layout simples, sem LVM
+            name: lvm
+        encryption:
+            enabled: true
+            passphrase: 'caso remo doca loto ames toso'
     updates: none
     codecs:
         install: false
