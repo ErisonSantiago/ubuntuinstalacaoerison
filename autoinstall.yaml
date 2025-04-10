@@ -12,24 +12,10 @@ autoinstall:
     timezone: "America/Sao_Paulo"
     storage:
         layout:
-            name: lvm
-        swap:
-            size: 0
-        encryption:
-            enabled: true
-            passphrase: 'caso remo doca loto ames toso'
-    packages:
-        - libreoffice
-        - gimp
-        - git
-        - wget
-    snaps:
-        - name: spotify
-          channel: stable
-          classic: false
+            name: direct  # usa layout simples, sem LVM
+    updates: none
     codecs:
-        install: true
+        install: false
     drivers:
-        install: true
-    updates: all
+        install: false
     shutdown: reboot
