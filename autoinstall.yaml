@@ -4,8 +4,7 @@ autoinstall:
   identity:
     hostname: ubuntu
     username: usuario
-    password: "$6$abcd1234$uWYBp4vUbKN5XwGhznXvZ9vSfqZ7FkjzkB2Y2y5hC3gPPIsWnVQ8Z7KpxDgq5MPrVKmVEtBtXUflMz.m/OZZq0"
-    # A senha acima é um hash SHA-512 para "senha123" — altere conforme necessário!
+    password: "$6$gSa1WhOC3K$G.6VdwG8LsU7Sm9JPh09FvLxjcvHXDN8s82pajWkAwPQU86HQO0UkOemQoR4sq4mhVeFMXnbJFaO/MnPvXluZ0"
   locale: en_US
   keyboard:
     layout: us
@@ -15,6 +14,7 @@ autoinstall:
     primary:
       - arches: [amd64]
         uri: http://archive.ubuntu.com/ubuntu
+
   storage:
     layout:
       name: direct
@@ -22,7 +22,6 @@ autoinstall:
       - type: disk
         id: disk0
         match:
-          size: largest
           model: nvme0n1
         wipe: superblock-recursive
         ptable: gpt
@@ -45,7 +44,7 @@ autoinstall:
       - type: partition
         id: crypt
         device: disk0
-        size: -1  # restante do disco
+        size: -1
         wipe: superblock
         preserve: false
         grub_device: false
@@ -53,7 +52,8 @@ autoinstall:
       - type: luks
         id: luks_root
         device: crypt
-        key: ubuntu
+        key: 
+          passphrase: "sito ague tons ajo seja cepa"
         wipe: superblock
         preserve: false
 
@@ -80,9 +80,11 @@ autoinstall:
 
   user-data:
     disable_root: false
+
   ssh:
     install-server: true
     allow-pw: true
+
   updates: security
   packages:
     - vim
