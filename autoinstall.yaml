@@ -4,7 +4,8 @@ autoinstall:
   identity:
     hostname: ubuntu
     username: usuario
-    password: "$6$gSa1WhOC3K$G.6VdwG8LsU7Sm9JPh09FvLxjcvHXDN8s82pajWkAwPQU86HQO0UkOemQoR4sq4mhVeFMXnbJFaO/MnPvXluZ0"
+    password: "BBZro@2020"
+    # senha: senha123
   locale: en_US
   keyboard:
     layout: us
@@ -14,7 +15,6 @@ autoinstall:
     primary:
       - arches: [amd64]
         uri: http://archive.ubuntu.com/ubuntu
-
   storage:
     layout:
       name: direct
@@ -22,6 +22,7 @@ autoinstall:
       - type: disk
         id: disk0
         match:
+          size: largest
           model: nvme0n1
         wipe: superblock-recursive
         ptable: gpt
@@ -52,8 +53,7 @@ autoinstall:
       - type: luks
         id: luks_root
         device: crypt
-        key: 
-          passphrase: "sito ague tons ajo seja cepa"
+        passphrase: "minhasenha123"   # <<< senha do LUKS (vai pedir no boot)
         wipe: superblock
         preserve: false
 
@@ -78,13 +78,9 @@ autoinstall:
         filesystem: ext4
         mount: /home
 
-  user-data:
-    disable_root: false
-
   ssh:
     install-server: true
     allow-pw: true
-
   updates: security
   packages:
     - vim
