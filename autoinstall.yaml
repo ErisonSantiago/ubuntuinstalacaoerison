@@ -1,24 +1,89 @@
 #cloud-config
 autoinstall:
-    version: 1
-    identity:
-        realname: 'Usuário RLS'
-        hostname: zropc
-        username: rls
-        password: '$y$j9T$8Uu4aXs.NK6TT3Ky0HgFw.$S1NiIhz8GBfNMWbEYV4PZrYHImEYj90PYNq2uSvmgTB'  # BBZro@2020
-    locale: pt_BR.utf8
-    keyboard:
-        layout: br
-    timezone: "America/Sao_Paulo"
-    storage:
-        layout:
-            name: lvm
-        encryption:
-            enabled: true
-            passphrase: 'caso remo doca loto ames toso'
-    updates: none
-    codecs:
-        install: false
-    drivers:
-        install: false
-    shutdown: reboot
+  version: 1
+  identity:
+    hostname: ubuntu
+    username: usuario
+    password: "$6$abcd1234$uWYBp4vUbKN5XwGhznXvZ9vSfqZ7FkjzkB2Y2y5hC3gPPIsWnVQ8Z7KpxDgq5MPrVKmVEtBtXUflMz.m/OZZq0"
+    # A senha acima é um hash SHA-512 para "senha123" — altere conforme necessário!
+  locale: en_US
+  keyboard:
+    layout: us
+  timezone: America/Sao_Paulo
+  apt:
+    preserve_sources_list: false
+    primary:
+      - arches: [amd64]
+        uri: http://archive.ubuntu.com/ubuntu
+  storage:
+    layout:
+      name: direct
+    config:
+      - type: disk
+        id: disk0
+        match:
+          size: largest
+          model: nvme0n1
+        wipe: superblock-recursive
+        ptable: gpt
+
+      - type: partition
+        id: efi
+        device: disk0
+        size: 512M
+        flag: boot
+        filesystem: fat32
+        mount: /boot/efi
+
+      - type: partition
+        id: boot
+        device: disk0
+        size: 1024M
+        filesystem: ext4
+        mount: /boot
+
+      - type: partition
+        id: crypt
+        device: disk0
+        size: -1  # restante do disco
+        wipe: superblock
+        preserve: false
+        grub_device: false
+
+      - type: luks
+        id: luks_root
+        device: crypt
+        key: ubuntu
+        wipe: superblock
+        preserve: false
+
+      - type: lvm_volgroup
+        id: vg0
+        name: vg0
+        devices: [luks_root]
+
+      - type: lvm_logical_volume
+        id: lv_root
+        name: root
+        volgroup: vg0
+        size: 20G
+        filesystem: ext4
+        mount: /
+
+      - type: lvm_logical_volume
+        id: lv_home
+        name: home
+        volgroup: vg0
+        size: -1
+        filesystem: ext4
+        mount: /home
+
+  user-data:
+    disable_root: false
+  ssh:
+    install-server: true
+    allow-pw: true
+  updates: security
+  packages:
+    - vim
+    - curl
